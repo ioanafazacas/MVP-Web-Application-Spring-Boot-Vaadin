@@ -1,9 +1,14 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.awt.*;
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "flower_from_flower_shop")
 public class FlowerFromFlowerShop {
@@ -18,5 +23,5 @@ public class FlowerFromFlowerShop {
     private FlowerShop flowerShop;
 
     private int quantity;
-    private Color color;
+    private String color;
 }

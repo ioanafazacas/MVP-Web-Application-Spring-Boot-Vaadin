@@ -1,8 +1,7 @@
 package com.example.demo.view;
 
-
-import com.example.demo.presenter.FlowerPresenter;
-import com.example.demo.presenter.InterfaceGUI.IFlowerGUI;
+import com.example.demo.presenter.FlowerFromShopPresenter;
+import com.example.demo.presenter.InterfaceGUI.IFlowerFromShopGUI;
 import com.example.demo.presenter.dto.FlowerDto;
 import com.example.demo.presenter.dto.ShopDto;
 import com.vaadin.flow.component.button.Button;
@@ -19,35 +18,35 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-
-@PageTitle("Flowers")
-@Route(value = "/flower")
+@PageTitle("Flowers From Shop")
+@Route(value = "/flower_from_shop")
 @Component
 @UIScope
-public class FlowerGUI extends VerticalLayout implements IFlowerGUI {
-    private FlowerPresenter presenter;
+public class FlowerFromShopGUI extends VerticalLayout implements IFlowerFromShopGUI {
+    private FlowerFromShopPresenter presenter;
     private TextField nameField = new TextField("Name");
-    private TextField priceField = new TextField("Price");
-    private TextField imageField = new TextField("URL Imagine");
     private TextField quantityField = new TextField("Quantity");
     private Button addButton = new Button("Add Flower");
-    private Button deleteButton = new Button("Delete Flower");
-    private Button updateButton = new Button("Update Flower");
+    private Button filterButton = new Button("Filter Flower");
     private Grid<FlowerDto> floareGrid = new Grid<>(FlowerDto.class);
-    private ComboBox<ShopDto> shopComboBox = new ComboBox<>("Select a shop in witch to add the nre flower");
-    private ComboBox<FlowerDto> flowerComboBox = new ComboBox<>("Select a flower for delete or update");
+    private ComboBox<ShopDto> shopComboBox = new ComboBox<>("Select a shop in witch to add the flower");
+    private ComboBox<FlowerDto> flowerComboBox = new ComboBox<>("Select a flower ");
     private ComboBox<String> colorComboBox = new ComboBox<>("Select a color for the flower");
+    private ComboBox<String> colorFilterComboBox = new ComboBox<>("Select a color for the filter");
+    private ComboBox<String> disponibilityComboBox = new ComboBox<>();
 
-    public FlowerGUI(FlowerPresenter presenter){
+    public FlowerFromShopGUI(FlowerFromShopPresenter presenter){
         this.presenter=presenter;
-        presenter.init_IFlowerGUI(this);
+        presenter.init_IFlowerFromShopGUI(this);
 
-        addButton.addClickListener(e -> presenter.addFlower());
-        deleteButton.addClickListener(e -> presenter.deleteFlower());
-        updateButton.addClickListener(e -> presenter.updateFlower());
+        addButton.addClickListener(e -> presenter.addFlowerToShop());
+        filterButton.addClickListener(e -> {
+            System.out.println("Butonul de filtrare a fost apăsat!"); // Debugging
+            presenter.filterFlowers();
+        });
 
         setColorComboBox();
+        setDisponibilityComboBox();
         flowerComboBox.setWidthFull();
         shopComboBox.setWidthFull();
 
@@ -58,9 +57,9 @@ public class FlowerGUI extends VerticalLayout implements IFlowerGUI {
             return image;
         }).setHeader("Image");
 
-        add(new Button("Reimprospatare", e -> presenter.showAllFlowers()));
-        add(nameField, priceField, imageField,shopComboBox,quantityField,colorComboBox,
-                addButton,flowerComboBox,deleteButton,updateButton, floareGrid);
+        add(flowerComboBox,shopComboBox,colorComboBox,quantityField,addButton,
+                nameField,colorFilterComboBox,disponibilityComboBox,filterButton,floareGrid);
+
 
     }
     private void setColorComboBox(){
@@ -70,8 +69,14 @@ public class FlowerGUI extends VerticalLayout implements IFlowerGUI {
         items.add("PINK");
         items.add("YELLOW");
         colorComboBox.setItems(items);
+        colorFilterComboBox.setItems(items);
     }
-
+    private void setDisponibilityComboBox(){
+        Collection<String> items = new ArrayList<>();
+        items.add("DISPONIBIL");
+        items.add("INDISPONIBIL");
+        disponibilityComboBox.setItems(items);
+    }
     @Override
     public void setGrid(List<FlowerDto> flowers) {
         floareGrid.setItems(flowers);
@@ -104,22 +109,21 @@ public class FlowerGUI extends VerticalLayout implements IFlowerGUI {
 
     @Override
     public String getColor() {
-        return colorComboBox.getValue() ;
+        return colorComboBox.getValue();
     }
 
     @Override
-    public float getPrice() {
-        return Float.parseFloat(priceField.getValue());
+    public String getColorFilter() {
+        return colorFilterComboBox.getValue();
+    }
+
+    @Override
+    public String getDisponibility() {
+        return disponibilityComboBox.getValue();
     }
 
     @Override
     public int getQuantity() {
         return Integer.parseInt(quantityField.getValue());
     }
-
-    @Override
-    public String getImagePath() {
-        return imageField.getValue();
-    }
 }
-
