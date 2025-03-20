@@ -1,6 +1,7 @@
 package com.example.demo.model.repository;
 
 import com.example.demo.model.FlowerFromFlowerShop;
+import com.example.demo.model.FlowerShop;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -31,4 +32,18 @@ public interface FlowerFromShopRepository extends JpaRepository<FlowerFromFlower
     // 🔹 Returnează toate florile care au quantity > 0 (în stoc)
     @Query("SELECT f FROM FlowerFromFlowerShop f WHERE f.quantity > 0")
     List<FlowerFromFlowerShop> findAvailableFlowers();
+
+    @Query("SELECT DISTINCT f.color FROM FlowerFromFlowerShop f WHERE f.flower.name = :name")
+    List<String> findFlowerColorsByName(@Param("name") String name);
+
+    @Query("SELECT f FROM FlowerFromFlowerShop f WHERE f.color = :color AND f.flowerShop = :shop")
+    List<FlowerFromFlowerShop> findByColorAndShop(@Param("color") String color, @Param("shop") FlowerShop shop);
+
+    // 🔹 Returnează toate florile care au quantity = 0 dintr-o anumită florărie
+    @Query("SELECT f FROM FlowerFromFlowerShop f WHERE f.quantity = 0 AND f.flowerShop = :shop")
+    List<FlowerFromFlowerShop> findOutOfStockFlowersByShop(@Param("shop") FlowerShop shop);
+
+    // 🔹 Returnează toate florile care au quantity > 0 dintr-o anumită florărie
+    @Query("SELECT f FROM FlowerFromFlowerShop f WHERE f.quantity > 0 AND f.flowerShop = :shop")
+    List<FlowerFromFlowerShop> findAvailableFlowersByShop(@Param("shop") FlowerShop shop);
 }

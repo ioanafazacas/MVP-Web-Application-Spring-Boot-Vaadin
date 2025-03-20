@@ -70,21 +70,24 @@ public class FlowerFromShopPresenter {
     public void filterFlowers() {
         String disponibility = view.getDisponibility();;
         String color = view.getColorFilter();
+        ShopDto shopDto = view.getSelectedShop();
+        FlowerShop shop = shopRepository.findByNameAndAddress(shopDto.name(),shopDto.address());
         List<Flower> flowers= new ArrayList<>();
+
         if(color!=null){
 
-            for(FlowerFromFlowerShop flowerToShop: flowerFromShopRepository.findByColor(color)){
+            for(FlowerFromFlowerShop flowerToShop: flowerFromShopRepository.findByColorAndShop(color,shop)){
                 flowers.add(flowerToShop.getFlower());
             }
         }
         if(disponibility!=null){
         if(disponibility.equals("DISPONIBIL")){
 
-            for(FlowerFromFlowerShop flowerToShop: flowerFromShopRepository.findAvailableFlowers()){
+            for(FlowerFromFlowerShop flowerToShop: flowerFromShopRepository.findAvailableFlowersByShop(shop)){
                 flowers.add(flowerToShop.getFlower());
             }
         }else{
-            for(FlowerFromFlowerShop flowerToShop: flowerFromShopRepository.findOutOfStockFlowers()){
+            for(FlowerFromFlowerShop flowerToShop: flowerFromShopRepository.findOutOfStockFlowersByShop(shop)){
                 flowers.add(flowerToShop.getFlower());
             }
         }}
@@ -95,9 +98,9 @@ public class FlowerFromShopPresenter {
         Notification.show("Tabel filtrat cu succes!", 3000, Notification.Position.BOTTOM_START)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
     }
-    public void searchFlower(){
+    public List<String> searchFlower(){
         String name = view.getName();
-
+        return flowerFromShopRepository.findFlowerColorsByName(name);
     }
 
 

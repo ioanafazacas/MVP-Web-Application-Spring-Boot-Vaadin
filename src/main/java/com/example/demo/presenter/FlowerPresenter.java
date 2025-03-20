@@ -32,20 +32,16 @@ public class FlowerPresenter {
     }
     public void showAllFlowers(){
         List<FlowerDto> flowers = FlowerMapper.flowerListEntityToDto(flowerRepository.findAll());
-        List<ShopDto> shops = ShopMapper.shopListEntityToDto(shopRepository.findAll());
+
         view.setGrid(flowers);
         view.setComboBoxFlowers(flowers);
-        view.setComboBoxShops(shops);
+
     }
     public void addFlower(){
         String name = view.getName();
         float price= view.getPrice();
         String imagePath= view.getImagePath();
-        int quantity = view.getQuantity();
-        String color = view.getColor();
-        ShopDto shopDto = view.getSelectedShop();
 
-        FlowerShop shop = shopRepository.findByNameAndAddress(shopDto.name(),shopDto.address());
 
         Flower flower= Flower.builder()
                 .name(name)
@@ -53,15 +49,6 @@ public class FlowerPresenter {
                 .imagePath(imagePath)
                 .build();
         flowerRepository.save(flower);
-        Flower newFlower = flowerRepository.findByName(name);
-
-        FlowerFromFlowerShop flowerFromFlowerShop = new FlowerFromFlowerShop();
-        flowerFromFlowerShop.setFlowerShop(shop);
-        flowerFromFlowerShop.setFlower(newFlower);
-        flowerFromFlowerShop.setQuantity(quantity);
-        flowerFromFlowerShop.setColor(color);
-
-        flowerFromShopRepository.save(flowerFromFlowerShop);
     }
     public void deleteFlower(){
         FlowerDto flowerDto = view.getSelectedFlower();

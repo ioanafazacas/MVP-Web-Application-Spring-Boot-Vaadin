@@ -8,6 +8,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
@@ -28,6 +29,7 @@ public class FlowerFromShopGUI extends VerticalLayout implements IFlowerFromShop
     private TextField quantityField = new TextField("Quantity");
     private Button addButton = new Button("Add Flower");
     private Button filterButton = new Button("Filter Flower");
+    private Button checkColorsButton = new Button("Search flower and display available colors");
     private Grid<FlowerDto> floareGrid = new Grid<>(FlowerDto.class);
     private ComboBox<ShopDto> shopComboBox = new ComboBox<>("Select a shop in witch to add the flower");
     private ComboBox<FlowerDto> flowerComboBox = new ComboBox<>("Select a flower ");
@@ -50,6 +52,16 @@ public class FlowerFromShopGUI extends VerticalLayout implements IFlowerFromShop
         flowerComboBox.setWidthFull();
         shopComboBox.setWidthFull();
 
+        checkColorsButton = new Button("Check Available Colors", event -> {
+
+            if (nameField != null) {
+                List<String> colors = presenter.searchFlower();
+                Notification.show("Available colors: " + String.join(", ", colors));
+            } else {
+                Notification.show("Please select a flower first!", 3000, Notification.Position.MIDDLE);
+            }
+        });
+
         floareGrid.addComponentColumn(flowerDto -> {
             Image image = new Image(flowerDto.imagePath(), "No Image");
             image.setWidth("100px");  // Setează dimensiunea imaginii
@@ -58,7 +70,7 @@ public class FlowerFromShopGUI extends VerticalLayout implements IFlowerFromShop
         }).setHeader("Image");
 
         add(flowerComboBox,shopComboBox,colorComboBox,quantityField,addButton,
-                nameField,colorFilterComboBox,disponibilityComboBox,filterButton,floareGrid);
+                nameField,checkColorsButton,colorFilterComboBox,disponibilityComboBox,filterButton,floareGrid);
 
 
     }
